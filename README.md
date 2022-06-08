@@ -93,7 +93,7 @@ Next step is turn off the VM's Windows Firewall. First, just to show that it's n
 
 <!--- the -t command after the IP was to keep the ping going untill stopped. I hit ctrl+c to stop the pings--->
 
-Good, it failed. Back to the VM. In the search bar type wf.msc.
+Good, it failed. Back to the VM. In the search bar type wf.msc
 
 <img src="https://user-images.githubusercontent.com/106196315/171785210-b28aa35c-562d-4b77-98ad-d827bd352bee.png" width="550" height="450" />
 
@@ -121,7 +121,20 @@ Click the New Script icon at the top.
 
 ![new script](https://user-images.githubusercontent.com/106196315/171787358-54d56665-2c55-4a39-b2a8-d61901d19bc2.png)
 
-Paste the script. Save on the desktop as Log_Exporter.
+Paste the script. Save on the desktop as Log_Exporter
 
 <!---or don't, save it whatever you like. it doesn't matter--->
 
+<!---actually please save. I now have had to go through this lab from this point 2 times, and lost my prgoress both times, and am starting a 3rd time, because I didn't save it right--->
+
+Now we need to head back to [ipgeolocation.io](https://ipgeolocation.io/). Make a free account so you can get an API key. If you don't do this, you won't be able to get the location data, and will not be able to log the attacks on a map. Just replace the API key from the first line with your new key.
+
+![api key](https://user-images.githubusercontent.com/106196315/172697591-e092e646-6e31-4570-8092-a7fa5788cb51.png)
+
+It's now time to run the script. You will see while it's running that it's collecting the 4625 EventIDs that we saw earlier from the Event Viewer, but also with location data provided from [ipgeolocation.io](https://ipgeolocation.io/).
+
+Now go to the hidden folder ProgramData under your C drive. Here is where our script will create a text document log file with all the results. It will be called failed_rdp.log
+
+![hidden programdata](https://user-images.githubusercontent.com/106196315/172700908-e605c6a6-ec35-41d6-b620-83d3896d965a.png)
+
+Open the log, and ctrl+a & ctrl+c to copy it's contents. Back on your computer make a new text document, 
