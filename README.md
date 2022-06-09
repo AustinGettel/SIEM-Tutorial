@@ -137,4 +137,33 @@ Now go to the hidden folder ProgramData under your C drive. Here is where our sc
 
 ![hidden programdata](https://user-images.githubusercontent.com/106196315/172700908-e605c6a6-ec35-41d6-b620-83d3896d965a.png)
 
-Open the log, and ctrl+a & ctrl+c to copy it's contents. Back on your computer make a new text document, 
+Open the log, and ctrl+a & ctrl+c to copy it's contents. Back on your computer make a new text document, title it failed_rdp.log, paste the contents from the log on the VM, and save this file on your desktop.
+
+Now back on azure, go to your law, and on the left menu select custom logs.
+
+![workspace custom logs](https://user-images.githubusercontent.com/106196315/172884804-e4f3a051-698d-4b9c-9f10-7663f96b919d.png)
+
+Add a custom log, and azure will ask for a sample log. Select the failed_rdp.log file that we just made on your desktop that is a copy of the VM. The next screen will show the log sample you gave for review. The collection path is asking how to find this log on the VM, select Windows, and type 
+
+C:\ProgramData\failed_rdp.log
+
+<!---typing is very important here, any mistake will prevent the query on the next step from being able to collect the log data--->
+
+![collection path](https://user-images.githubusercontent.com/106196315/172886784-8bca84eb-8c8c-4f68-8950-3d8654a206b9.png)
+
+<!---can you imagine why I hard time on my first try--->
+
+Name your log FAILED_RDP_WITH_GEO (the CL will add itself on the end making the full title FAILED_RDP_WITH_GEO_CL)
+
+On the left menu go to logs.
+
+The query will for our custom log will take some time to load. While waiting, we should try a queary on the Windows Security Event logs we looked at earlier. On line 1 of the query type
+
+SecurityEvent | where EventID == 4625
+
+![security event](https://user-images.githubusercontent.com/106196315/172890845-c85ae1df-e92d-47b1-ab87-a6069d57d302.png)
+
+This will show you a list of all the failed attempts to sign in on your honeypot, just without the geolocations from the script.
+
+Take a coffee break, and in about 10 minutes try the custom log we made.
+
