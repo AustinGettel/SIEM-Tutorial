@@ -1,4 +1,4 @@
-# SIEM-Tutorial
+# SIEM-Sentinel-Tutorial
 SIEM Tutorial for Beginners | Set up live SIEM | Azure Sentinel MAP with LIVE CYBER ATTACKS
 
 In this lab we're going to create our own SIEM environment on an Azure cloud to get experience working with our own. We're going to set up our VM environment, and turn off the firewalls to make our VM very appealing to global attackers. We'll then creat a log repository in Azure, i.e. Log Analytics Workspace, to process the logs from the VM. Lastly we will set up our SIEM by using Microsoft's Azure Sentinal to map our attackers.
@@ -167,3 +167,93 @@ This will show you a list of all the failed attempts to sign in on your honeypot
 
 Take a coffee break, and in about 10 minutes try the custom log we made.
 
+<!---took me 2 days to get back to this. hopefully not so long for you--->
+
+Now we need to extract the data from the RawDate feild to have their own fields. To do so, right click on one of the logs, and select Extract fields.
+
+![extract fields](https://user-images.githubusercontent.com/106196315/173198054-af23e147-7612-44fe-995e-f50f88536bc3.png)
+
+To extract the raw data and turn into a field highlight the data after the :
+
+![highlighted field rawdata](https://user-images.githubusercontent.com/106196315/173198123-365a95d3-55c4-4292-96c3-5c3fd55a98d7.png)
+
+Title the field latitude and change the field type to numeric. Review the search results, and if they all look right then save extraction. 
+
+![field value](https://user-images.githubusercontent.com/106196315/173198186-1f09633e-2cfd-424f-9a00-9fc71a51d1fa.png)
+
+<!---If you're like me, and taking your sweet, sweet time doing this (or really like me and getting very aggrevated at the limited time to do this), then you may also have an obscene amount of hits to work with. I had over 15k events coming up in my query, and the custom fields failed to learn anything. So, turn off the script, and came back in a day. start it up, wait till you have a few hits and it's updating your text doc log on the VM. Give Azure another 10 minutes, and try again. you should have a much smaller query and azure will be able to learn for you.--->
+
+Now repeat with longitude (numeric value), destinationhost (this is our target VM (text value)), username (text value), sourcehost (text value), state (text value), country (text value), label (this includes the country again and the IP address and will be used to label locations on the map (text value)), and the timestamp (date/time value).
+
+When I went to extract longitude, you'll see it's accuractly extracting longitudes with - before them, but if they didn't have the - they're finding the next section with - in my caser I got 76 matches with -vm.
+
+![traingin the algo](https://user-images.githubusercontent.com/106196315/173200033-9f7b3b9c-8019-494e-90be-752b79fe7e11.png)
+
+To fix this, we'll train the algorithm to find what we want. Click the circle icon on the right on one of the searches with a bad result. Select Modify this highlight.
+
+![traingin the algo 2](https://user-images.githubusercontent.com/106196315/173200102-66f75410-d097-4997-b169-ed1daf64a0cf.png)
+
+Just like before, highlight the actual longitude, and hit extract. Just like that, all of my search reults are good. Be sure to check yours for more errors. Also check to make sure there no results with nothing highlighted. Fix those the same way we fix the others.
+
+Now that we're done, if you press run again you'll see the fields that we made, but they're empty. As more attacks come in, they data will be parsed out into our custom fields. You may even see some attacks with some of the fields filled in as these attacks were happening while we were making our custom fields.
+
+<!---in the future if data is getting messed up, go to custom logs > custom fields and delete the data field that is getting messed up. Now just redo the extract, and you should be good--->
+
+Now, it's time to set up our SIEM and make the map in Sentinel!
+
+Open a new tab and go to [portal.azure.com](https://portal.azure.com). Click on your law, on the left menu click on workbooks, and add workbook. Click edit, and remove the two default widgets by hitting the three dots, select remove, and confirm.
+
+![remove default widget](https://user-images.githubusercontent.com/106196315/173201784-73d012c7-0885-4eb2-b924-625d7bc8afbb.png)
+
+Now we need to add a query. Click add, and select add query.
+
+![add query](https://user-images.githubusercontent.com/106196315/173201828-40bf8cc9-079c-429b-be6c-f419b734ac38.png)
+
+For our queary we need our custom log FAILED_RDP_WITH_GEO_CL
+
+We want to summarize the counts of each attack with our custom fields.
+
+We don't want our own log in failures (if any) to count so 
+
+| where destionhost_CF != "samplehost"
+
+Now we also need to to exlude any hits with a blank source host so
+
+| where destionhost_CF != ""
+
+I did another to exlcude any fields with blank label data, as that was the last custom field I made
+
+| where label_CF != ""
+
+Or just copy and paste the following
+
+FAILED_RDP_WITH_GEO_CL | summarize event_count=count() by sourcehost_CF, latitude_CF, longitude_CF, country_CF, label_CF, destinationhost_CF
+| where destinationhost_CF != "samplehost"
+| where sourcehost_CF != ""
+| where label_CF != ""
+
+Run query. Does it look like it's pulling hits with all the data? Good. Under the visualization field change it to map.
+
+There are two ways we can map out our attacks. By longitude and latitude, or by country. You may have better luck with one of these settings than another, so try both.
+
+1st, I'll show you the settings for longitude and latitude.
+
+![layout settings - longitude and latitude](https://user-images.githubusercontent.com/106196315/173202424-473a19fa-29e1-4fad-b9aa-bfead1cae6f8.png)
+
+You also need to set your metric settings.
+
+![Metric Settings](https://user-images.githubusercontent.com/106196315/173202547-5dbff7fe-bad7-4c92-ae4c-12912c697999.png)
+
+Now, if you'd like to try by country.
+
+![layout settings - country](https://user-images.githubusercontent.com/106196315/173202560-7b1aa0f2-e5cf-47b0-8093-b23aa0f754eb.png)
+
+My map results by longitude and latitude
+
+![map results - longitude and latitude](https://user-images.githubusercontent.com/106196315/173202577-7bf46e36-6d6c-4a06-9234-58958947aef3.png)
+
+My map results by country
+
+![map results - country](https://user-images.githubusercontent.com/106196315/173202612-34ebf620-fc7a-4807-9944-f1f0ee14c7fa.png)
+
+As you can see, a little different.
