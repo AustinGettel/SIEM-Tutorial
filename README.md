@@ -228,9 +228,14 @@ I did another to exlcude any fields with blank label data, as that was the last 
 Or just copy and paste the following
 
 FAILED_RDP_WITH_GEO_CL | summarize event_count=count() by sourcehost_CF, latitude_CF, longitude_CF, country_CF, label_CF, destinationhost_CF
+
 | where destinationhost_CF != "samplehost"
+
 | where sourcehost_CF != ""
+
 | where label_CF != ""
+
+![workbook - new query](https://user-images.githubusercontent.com/106196315/174146823-46c9d29e-df87-4f7a-984c-80f76d103408.png)
 
 Run query. Does it look like it's pulling hits with all the data? Good. Under the visualization field change it to map.
 
@@ -257,3 +262,6 @@ My map results by country
 ![map results - country](https://user-images.githubusercontent.com/106196315/173202612-34ebf620-fc7a-4807-9944-f1f0ee14c7fa.png)
 
 As you can see, a little different.
+
+Now save as Failed RDP World Map.
+
