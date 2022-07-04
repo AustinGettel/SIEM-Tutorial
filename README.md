@@ -1,5 +1,5 @@
-# SIEM-Sentinel-Tutorial
-SIEM Tutorial for Beginners | Set up live SIEM | Azure Sentinel MAP with LIVE CYBER ATTACKS
+<h1># SIEM-Sentinel-Tutorial</h1>
+<h2>SIEM Tutorial for Beginners | Set up live SIEM | Azure Sentinel MAP with LIVE CYBER ATTACKS</h2>
 
 In this lab we're going to create our own SIEM environment on an Azure cloud to get experience working with our own. We're going to set up our VM environment, and turn off the firewalls to make our VM very appealing to global attackers. We'll then creat a log repository in Azure, i.e. Log Analytics Workspace, to process the logs from the VM. Lastly we will set up our SIEM by using Microsoft's Azure Sentinal to map our attackers.
 
@@ -7,7 +7,7 @@ In this lab we're going to create our own SIEM environment on an Azure cloud to 
 
 And this lab will be done with powershell. This will allow us to capture the attacker's IPs, which we can then send to a 3rd party API to find their locations, and send back to the VM to log the attacks along with geographical data.
 
-To get started make you free [Microsoft Azure account here](https://azure.microsoft.com/en-us/free/).
+<h3>To get started make you free [Microsoft Azure account here](https://azure.microsoft.com/en-us/free/).</h3>
 
 <!---remember to tell everyone to delete the resources they make so it dosn't cost them--->
 
@@ -45,6 +45,8 @@ Replace the destination port ranges with an * for anything, any protocol, action
 
 Review and create.
 
+<h3>Log Analytic Workbook and Sentinel</h3>
+
 While we're waiting on the VM to deploy, let's make our log analytic workplace. Type log analytic workplace into the search bar at the top, select it, and click create log analytic workplace.
 
 ![creater law](https://user-images.githubusercontent.com/106196315/171747911-cf237b8d-9873-4cde-9fdb-ef6a1dfac84f.png)
@@ -68,6 +70,8 @@ wait for it to connect, then type sentinel into the top. Select Sentinel. Again,
 This page is to add sentinel to our workspace. Click on the workspace and hit the add button.
 
 <!---WHY IS THE LAW I ALREADY SET UP NOT SHOWING?! If you're having trouble finding your workspace while setting up sentinel, click on create a new workspace. Now go through the set up just like you did earlier in the same group and with the same name. It should give you an error saying you can't use the same name. Good, now exit out of this and refresh the add sentinel to workspace page. Your workspace should now appear.--->
+
+<h3>Setting Up Our PowerShell API</h3>
 
 So, is your VM connected to your LAW and the LAW connected to Sentinel? Good. Time to log into the VM. Pull up the VM, and copy the public VM address. Now open remote desktop connection on your windows computer. Paste your IP and connect.
 
@@ -111,7 +115,7 @@ Back on my computer I'm going to ping the VM again.
 
 Alright, this time it worked. The firewall is down! No more use for the cmd, gonna close that.
 
-Now we need to download [this powershell script](https://github.com/joshmadakor1/Sentinel-Lab/blob/main/Custom_Security_Log_Exporter.ps1) from github on to the VM. I didnot write this script, full credit goes to Josh Madakor.
+Now we need to download [this powershell script](https://github.com/joshmadakor1/Sentinel-Lab/blob/main/Custom_Security_Log_Exporter.ps1) from github on to the VM. I did not write this script, full credit goes to Josh Madakor.
 
 On the VM we can close the event viewer and firewall. Download or copy the script. Open Windows Powershell ISE on your VM.
 
@@ -130,6 +134,8 @@ Paste the script. Save on the desktop as Log_Exporter
 Now we need to head back to [ipgeolocation.io](https://ipgeolocation.io/). Make a free account so you can get an API key. If you don't do this, you won't be able to get the location data, and will not be able to log the attacks on a map. Just replace the API key from the first line with your new key.
 
 ![api key](https://user-images.githubusercontent.com/106196315/172697591-e092e646-6e31-4570-8092-a7fa5788cb51.png)
+
+<h3>Write Our Query</h3>
 
 It's now time to run the script. You will see while it's running that it's collecting the 4625 EventIDs that we saw earlier from the Event Viewer, but also with location data provided from [ipgeolocation.io](https://ipgeolocation.io/).
 
@@ -169,6 +175,8 @@ Take a coffee break, and in about 10 minutes try the custom log we made.
 
 <!---took me 2 days to get back to this. hopefully not so long for you--->
 
+<h3>Teaching Our LAW</h3>
+
 Now we need to extract the data from the RawDate feild to have their own fields. To do so, right click on one of the logs, and select Extract fields.
 
 ![extract fields](https://user-images.githubusercontent.com/106196315/173198054-af23e147-7612-44fe-995e-f50f88536bc3.png)
@@ -198,6 +206,8 @@ Just like before, highlight the actual longitude, and hit extract. Just like tha
 Now that we're done, if you press run again you'll see the fields that we made, but they're empty. As more attacks come in, they data will be parsed out into our custom fields. You may even see some attacks with some of the fields filled in as these attacks were happening while we were making our custom fields.
 
 <!---in the future if data is getting messed up, go to custom logs > custom fields and delete the data field that is getting messed up. Now just redo the extract, and you should be good--->
+
+<h3>Connecting Sentinel</h3>
 
 Now, it's time to set up our SIEM and make the map in Sentinel!
 
@@ -237,7 +247,11 @@ FAILED_RDP_WITH_GEO_CL | summarize event_count=count() by sourcehost_CF, latitud
 
 ![workbook - new query](https://user-images.githubusercontent.com/106196315/174146823-46c9d29e-df87-4f7a-984c-80f76d103408.png)
 
-Run query. Does it look like it's pulling hits with all the data? Good. Under the visualization field change it to map.
+Run query. Does it look like it's pulling hits with all the data? Good. 
+
+<h3>Make A Map</h3>
+
+Under the visualization field change it to map.
 
 There are two ways we can map out our attacks. By longitude and latitude, or by country. You may have better luck with one of these settings than another, so try both.
 
@@ -265,3 +279,4 @@ As you can see, a little different.
 
 Now save as Failed RDP World Map.
 
+Thanks for following along.
